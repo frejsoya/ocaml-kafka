@@ -1,5 +1,7 @@
-(lang dune 2.0)
+(lang dune 3.10)
 (name kafka)
+(using ctypes 0.3)
+
 (generate_opam_files true)
 (maintainers "Didier Wenzek <didier.wenzek@acidalie.com>")
 (authors "Didier Wenzek <didier.wenzek@acidalie.com>")
