@@ -1,0 +1,48 @@
+(env
+ (_
+  (c_flags :standard -Wno-incompatible-pointer-types-discards-qualifiers)))
+
+(library
+ (name rdkafka_ctypes)
+ (libraries core integers)
+ 
+ ; ctypes backward compatibility shims warn sometimes; suppress them
+ (flags
+  (:standard -w -9-27))
+ (ctypes
+  (external_library_name rdkafka)
+  (build_flags_resolver pkg_config)
+  (headers
+   (include "librdkafka/rdkafka.h"))
+  (type_description
+   (instance Types)
+   (functor Type_description))
+  (function_description
+    ; TODO concurrency setting. Needs to be verified.
+   (concurrency unlocked)
+   (instance Functions)
+   (functor Function_description))
+  (generated_types Types_generated)
+  (generated_entry_point C)))
+
+
+;TODO given ctypes stanza above if hardcoded, with dune its hard to tell dependencies work.
+(rule
+ (targets type_enum.ml)
+ (mode promote)
+ (deps
+  (:gen ./codegen/main.exe)
+  (:defs ./codegen/rdkafka.h.json))
+ (action
+  (with-stdout-to
+   %{targets}
+   (run %{gen} %{defs}))))
+
+;
+; (rule
+;  (alias gencode)
+;  (action
+;   (diff type_enum.ml type_enum.ml.out)))
+;
+
+
