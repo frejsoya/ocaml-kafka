@@ -1,5 +1,3 @@
-(* let () = Printf.printf "rd kafka version %d\n" C.Types.version C.Types.version *)
-
 module Client : sig
   type t
   (* Exceptions *)
@@ -30,12 +28,23 @@ end = struct
   let destroy t = CKafka.kafka_destroy t.handle
   let name t = CKafka.name t.handle
 
-  let config t =
+  let config (t : t) : (string * string) list =
     let config = C.Functions.Conf.conf_of_kafka t.handle in
     let init = Unsigned.Size_t.of_int 0 in
     let count = Ctypes.allocate Ctypes.size_t init in
     let dump = C.Functions.Conf.dump config count in
-    []
+    let elements = Ctypes.(!@count) |> Unsigned.Size_t.to_int in
+    let carr = Ctypes.CArray.from_ptr dump elements in
+    let get_string idx = Ctypes.CArray.get carr idx |> Ctypes_std_views.string_of_char_ptr in
+    let rec loop idx acc =
+      if idx == elements then acc
+      else
+        let key = get_string idx in
+        let value = get_string (idx + 1) in
+        let t = (key, value) in
+        loop (idx + 2) (t :: acc)
+    in
+    loop 0 []
 
   let with_client f =
     make ()
