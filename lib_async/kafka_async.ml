@@ -33,7 +33,7 @@ let produce (t : producer) topic ?partition ?key msg =
   let msg_id = next_msg_id () in
   let ivar = Ivar.create () in
   Int.Table.add_exn t.pending_msg ~key:msg_id ~data:ivar;
-  Kafka.produce topic ?partition ?key ~msg_id msg ;
+  Kafka.produce topic ?partition ?key ~msg_id msg;
   Ivar.read ivar |> Deferred.ok
 
 external new_producer' :
@@ -91,7 +91,7 @@ let consume consumer ~topic =
   let open Result.Let_syntax in
   match String.Table.mem consumer.subscriptions topic with
   | true -> Error (Kafka.FAIL, "Already subscribed to this topic")
-  | false ->
+  | false -> (
       Ivar.fill_if_empty consumer.start_poll ();
       let subscribe_error = ref None in
       let reader =
@@ -106,16 +106,16 @@ let consume consumer ~topic =
       in
       don't_wait_for
         (let open Deferred.Let_syntax in
-        let%map () = Pipe.closed reader in
-        String.Table.remove consumer.subscriptions topic;
-        let remaining_subs = String.Table.keys consumer.subscriptions in
-        ignore @@ subscribe' consumer.handler ~topics:remaining_subs);
+         let%map () = Pipe.closed reader in
+         String.Table.remove consumer.subscriptions topic;
+         let remaining_subs = String.Table.keys consumer.subscriptions in
+         ignore @@ subscribe' consumer.handler ~topics:remaining_subs);
       match Pipe.is_closed reader with
       | false -> return reader
-      | true  ->
+      | true -> (
           match !subscribe_error with
           | None -> Error (Kafka.FAIL, "Programmer error, subscribe_error unset")
-          | Some e -> Error e
+          | Some e -> Error e))
 
 let new_topic (producer : producer) name opts =
   match Kafka.new_topic producer.handler name opts with
