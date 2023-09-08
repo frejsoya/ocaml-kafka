@@ -35,7 +35,9 @@ end = struct
     let dump = C.Functions.Conf.dump config count in
     let elements = Ctypes.(!@count) |> Unsigned.Size_t.to_int in
     let carr = Ctypes.CArray.from_ptr dump elements in
-    let get_string idx = Ctypes.CArray.get carr idx |> Ctypes_std_views.string_of_char_ptr in
+    let get_string idx =
+      Ctypes.CArray.get carr idx |> Ctypes_std_views.string_of_char_ptr
+    in
     let rec loop idx acc =
       if idx == elements then acc
       else
@@ -56,14 +58,7 @@ end = struct
   let destroy t = C.Functions.Kafka.kafka_destroy t.handle
 end
 
-(*
-Client connects to a kafka bokers
-*)
-module type Config = sig
-  type t
-
-  val set : t -> unit
-end
+module Config = Rdkafka_config
 
 module type Topic = sig
   type t
@@ -78,37 +73,6 @@ module type ProducerS = sig
   (**)
   (* val make : unit -> t *)
   (* val send : t -> message -> (unit, err) Result.t *)
-end
-
-module Config = struct
-  type t = { conf : C.Types.Conf.t Ctypes.ptr }
-
-  (* let make_opaque : type a. finalise:(a ptr -> unit) -> a typ -> a ptr = *)
-  (*  fun finalise reftyp -> *)
-  (*   let package p = *)
-  (*     CPointer (Fat.make ~managed:(Some (Obj.repr p)) ~reftyp (Stubs.block_address p)) *)
-  (*   in *)
-  (*   (* Gc.finalise (fun p -> f package p) *) *)
-  (*   (* Stubs.allocate count (sizeof reftyp) i *) *)
-  (*   finalise p; *)
-  (*   package p *)
-
-  let make () =
-    let conf = C.Functions.Conf.conf_new () in
-    let value : t = { conf } in
-    let finalise t =
-      print_endline "Cleaning\n";
-      C.Functions.Conf.destroy t.conf
-    in
-    Gc.finalise finalise value;
-    value
-
-  let dump { conf } =
-    let size_out = Ctypes.allocate Ctypes.size_t Unsigned.Size_t.zero in
-    let data = C.Functions.Conf.dump conf size_out in
-
-    (* let destroy { handle } = C.Functions.Conf.destroy handle in *)
-    data
 end
 
 module Producer = struct

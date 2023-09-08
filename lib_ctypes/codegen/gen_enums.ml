@@ -1,5 +1,4 @@
 open StdLabels
-open MoreLabels
 open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
 (**
@@ -14,10 +13,17 @@ let log = Format.eprintf
 type fields = { name : string; value : int }
 [@@deriving show, yojson, eq] [@@yojson.allow_extra_fields]
 
-type json_type = { type_class : string; enum_fields : fields list [@default []] }
+type json_type = {
+  type_class : string;
+  enum_fields : fields list; [@default []]
+}
 [@@deriving yojson, show] [@@yojson.allow_extra_fields]
 
-type json_header = { name : string; symbol_class : string; _type : json_type [@key "type"] }
+type json_header = {
+  name : string;
+  symbol_class : string;
+  _type : json_type; [@key "type"]
+}
 [@@deriving yojson, show] [@@yojson.allow_extra_fields]
 
 type json_headers = json_header list [@@deriving yojson, show]
@@ -44,7 +50,9 @@ let print_constant prefix name =
   let pos = String.length prefix in
   let len = String.length name - pos in
   let v_name = String.sub name ~pos ~len in
-  Format.printf "let %s = constant \"%s\" int64_t\n" (String.lowercase_ascii v_name) name
+  Format.printf "let %s = constant \"%s\" int64_t\n"
+    (String.lowercase_ascii v_name)
+    name
 
 let print_constants (enums : fields list) =
   let enums = List.map ~f:(fun (field : fields) -> field.name) enums in
@@ -67,7 +75,10 @@ let print_types names =
 
 let print_t_def name enums =
   Format.printf "let t  :  t typ = T.enum \"%s\" ~typedef:true\n" name;
-  List.map ~f:(fun (fields : fields) -> (drop_prefix "RD_KAFKA_" fields.name, fields.name)) enums
+  List.map
+    ~f:(fun (fields : fields) ->
+      (drop_prefix "RD_KAFKA_" fields.name, fields.name))
+    enums
   |> List.map ~f:(fun (stripped, _s) ->
          Format.sprintf "(`%s, %s)" stripped (String.lowercase_ascii stripped))
   |> String.concat ~sep:";" |> Format.printf "[ %s ]\n"
@@ -81,7 +92,11 @@ let parse_json filename =
       raise exn
   in
 
-  let enums = List.filter ~f:(fun { _type; _ } -> String.equal _type.type_class "enum") headers in
+  let enums =
+    List.filter
+      ~f:(fun { _type; _ } -> String.equal _type.type_class "enum")
+      headers
+  in
   Format.printf "module Enums(T : Ctypes.TYPE) = struct\n";
   Format.printf "open T\n";
   List.iter enums ~f:(fun { _type; name; _ } ->

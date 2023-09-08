@@ -18,7 +18,9 @@ module Types (T : Ctypes.TYPE) = struct
     type t = [ `rd_kafka_conf_s ] abstract
 
     let t : t typ =
-      typedef (T.abstract ~name:"rd_kafka_conf_s" ~size:0 ~alignment:0) "rd_kafka_conf_t"
+      typedef
+        (T.abstract ~name:"rd_kafka_conf_s" ~size:0 ~alignment:0)
+        "rd_kafka_conf_t"
   end
 
   module Handle = struct
@@ -29,7 +31,8 @@ module Types (T : Ctypes.TYPE) = struct
     (*FIXME ptr t *)
     type t = [ `rd_kafka_s ] abstract
 
-    let t : t typ = typedef (T.abstract ~name:"rd_kafka_s" ~size:0 ~alignment:0) "rd_kafka_t"
+    let t : t typ =
+      typedef (T.abstract ~name:"rd_kafka_s" ~size:0 ~alignment:0) "rd_kafka_t"
   end
 
   module Admin = struct end
@@ -39,7 +42,9 @@ module Types (T : Ctypes.TYPE) = struct
       type rd_kafka_topic_conf_s
       type t = rd_kafka_topic_conf_s structure ptr (* rd_kafak_topic_config_s *)
 
-      let ptr_t : t typ = ptr (typedef (structure "rd_kafka_topic_conf_s") "rd_kafka_topic_conf_t")
+      let ptr_t : t typ =
+        ptr
+          (typedef (structure "rd_kafka_topic_conf_s") "rd_kafka_topic_conf_t")
     end
 
     type t = unit ptr
@@ -65,7 +70,9 @@ module Types (T : Ctypes.TYPE) = struct
     type t = [ `rd_kafka_error_s ] abstract
 
     let t : t typ =
-      typedef (T.abstract ~name:"rd_kafka_error_s" ~size:0 ~alignment:0) "rd_kafka_error_t"
+      typedef
+        (T.abstract ~name:"rd_kafka_error_s" ~size:0 ~alignment:0)
+        "rd_kafka_error_t"
   end
 
   module Message = struct
