@@ -55,3 +55,22 @@ let set { conf } ~key ~value =
 (**)
 (*   (* let destroy { handle } = C.Functions.Conf.destroy handle in *) *)
 (*   data *)
+
+let%expect_test "config_test" =
+  let res_pp = Fmt.(result ~ok:Fmt.string ~error:string) in
+
+  Fmt.epr "Setting incorrect existing config value\n";
+  let conf = make () in
+  let res = set conf ~key:"foo" ~value:"bar" in
+
+  Fmt.epr "conf result: %a\n" res_pp res;
+  (* Get test..num.brokers *)
+  let key = "test.mock.num.brokers" in
+  let res = get conf ~key in
+  Fmt.epr "conf get %s=%a\n" key res_pp res;
+
+  let res = set conf ~key ~value:"3" in
+  Fmt.epr "conf set %s <- %a\n" key res_pp res;
+
+  let res = get conf ~key in
+  Fmt.epr "conf get %s=%a\n" key res_pp res

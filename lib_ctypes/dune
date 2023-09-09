@@ -4,7 +4,11 @@
 
 (library
  (name rdkafka_bind)
+ (public_name kafka.bindings)
+ (inline_tests)
  (libraries core integers fmt)
+ (preprocess
+  (pps ppx_expect))
  ; ctypes backward compatibility shims warn sometimes; suppress them
  (flags
   (:standard -w -9-27))
@@ -24,7 +28,7 @@
   (generated_types Types_generated)
   (generated_entry_point C)))
 
-;TODO given ctypes stanza above if hardcoded, with dune its hard to tell dependencies work.
+;TODO given ctypes stanza above is hardcoded, with dune its hard to tell if dependencies work.
 
 (rule
  (targets type_enum.ml)

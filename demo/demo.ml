@@ -20,13 +20,13 @@ let () =
 
   ()
 
-(* Set config *)
 let () =
   let res_pp = Fmt.(result ~ok:Fmt.string ~error:string) in
   Fmt.epr "Setting incorrect existing config value\n";
   let open Rdkafka_bind in
   let conf = Config.make () in
   let res = Rdkafka_bind.Config.set conf ~key:"foo" ~value:"bar" in
+
   Fmt.epr "conf result: %a\n" res_pp res;
   (* Get test..num.brokers *)
   let key = "test.mock.num.brokers" in
