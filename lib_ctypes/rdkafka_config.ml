@@ -44,11 +44,8 @@ let get { conf; _ } ~key =
 let set { conf } ~key ~value =
   let errstr, size = allocate_c_string () in
   let res = C.Functions.Conf.set conf key value errstr size in
-  (* Fmt.epr "set %s=%s with result: %s\n" key value
-     (Ctypes_std_views.string_of_char_ptr errstr)
-  *)
   match res with
-  | C.Types.Conf.Res.(`CONF_OK) -> Result.ok ()
+  | `CONF_OK -> Result.ok value
   | `CONF_INVALID | `CONF_UNKNOWN ->
       Error (Ctypes_std_views.string_of_char_ptr errstr)
 

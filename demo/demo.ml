@@ -22,15 +22,22 @@ let () =
 
 (* Set config *)
 let () =
-  Fmt.epr "Setting config value\n";
+  let res_pp = Fmt.(result ~ok:Fmt.string ~error:string) in
+  Fmt.epr "Setting incorrect existing config value\n";
   let open Rdkafka_bind in
   let conf = Config.make () in
   let res = Rdkafka_bind.Config.set conf ~key:"foo" ~value:"bar" in
-  let res_pp = Fmt.Dump.(result ~ok:Fmt.nop ~error:string) in
   Fmt.epr "conf result: %a\n" res_pp res;
+  (* Get test..num.brokers *)
+  let key = "test.mock.num.brokers" in
+  let res = Rdkafka_bind.Config.get conf ~key in
+  Fmt.epr "conf get %s=%a\n" key res_pp res;
 
-  let res = Config.set conf ~key:"test.mock.num.brokers" ~value:"3" in
-  Fmt.epr "conf result: %a\n" res_pp res
+  let res = Rdkafka_bind.Config.set conf ~key ~value:"3" in
+  Fmt.epr "conf set %s <- %a\n" key res_pp res;
+
+  let res = Rdkafka_bind.Config.get conf ~key in
+  Fmt.epr "conf get %s=%a\n" key res_pp res
 
 (* Config.set conf "foo" "bar" *)
 (* Producer *)
