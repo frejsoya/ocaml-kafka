@@ -2,7 +2,7 @@
 Config module for kafka
 *)
 
-type t
+type t = { conf : C.Types.Conf.t Ctypes.ptr }
 
 (* of_assoc_list/ to_assoc_list *)
 val set : t -> key:string -> value:string -> (string, string) result
