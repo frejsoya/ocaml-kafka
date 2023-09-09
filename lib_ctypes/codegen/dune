@@ -18,8 +18,6 @@
    ppx_deriving.ord))
  (libraries yojson ppx_yojson_conv_lib))
 
-
-
 (library
  (name gen_error_codes)
  (modules gen_error_codes)

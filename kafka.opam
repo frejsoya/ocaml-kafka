@@ -14,10 +14,11 @@ bug-reports: "https://github.com/didier-wenzek/ocaml-kafka/issues"
 depends: [
   "ocaml" {>= "4.02.3"}
   "conf-zlib"
-  "dune" {>= "1.10"}
+  "dune" {>= "3.10" & >= "1.10"}
+  "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {pinned}
+  ["dune" "subst"] {dev}
   [
     "dune"
     "build"

@@ -17,10 +17,11 @@ depends: [
   "cmdliner" {>= "1.1.0"}
   "lwt"
   "conf-zlib"
-  "dune" {>= "1.10"}
+  "dune" {>= "3.10" & >= "1.10"}
+  "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {pinned}
+  ["dune" "subst"] {dev}
   [
     "dune"
     "build"

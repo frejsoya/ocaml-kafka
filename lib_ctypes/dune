@@ -3,9 +3,8 @@
   (c_flags :standard -Wno-incompatible-pointer-types-discards-qualifiers)))
 
 (library
- (name rdkafka_ctypes)
- (libraries core integers)
- 
+ (name rdkafka_bind)
+ (libraries core integers fmt)
  ; ctypes backward compatibility shims warn sometimes; suppress them
  (flags
   (:standard -w -9-27))
@@ -18,15 +17,15 @@
    (instance Types)
    (functor Type_description))
   (function_description
-    ; TODO concurrency setting. Needs to be verified.
+   ; TODO concurrency setting. Needs to be verified.
    (concurrency unlocked)
    (instance Functions)
    (functor Function_description))
   (generated_types Types_generated)
   (generated_entry_point C)))
 
-
 ;TODO given ctypes stanza above if hardcoded, with dune its hard to tell dependencies work.
+
 (rule
  (targets type_enum.ml)
  (mode promote)
@@ -44,5 +43,3 @@
 ;  (action
 ;   (diff type_enum.ml type_enum.ml.out)))
 ;
-
-
