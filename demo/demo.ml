@@ -12,10 +12,10 @@ let () =
   let _res =
     Client.with_client @@ fun client ->
     Printf.printf "Client name %s" (Client.name client);
-    let conf = Client.config client in
+    let conf = Client.config_of client |> Config.to_list in
     let pp = Fmt.Dump.(list @@ pair string string) in
     (* let pp = Fmt.(list ~sep:cut @@ pair ~sep:comma string string) in *)
-    Fmt.pr "%a.\n" pp conf
+    Fmt.pr "%a@.\n" pp conf
   in
 
   ()

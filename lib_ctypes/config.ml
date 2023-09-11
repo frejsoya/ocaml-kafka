@@ -67,7 +67,9 @@ let to_list t : (string * string) list =
       let t = (key, value) in
       loop (idx + 2) (t :: acc)
   in
-  loop 0 []
+  let res = loop 0 [] in
+  C.Functions.Conf.dump_free dump Ctypes.(!@count);
+  res
 
 let%expect_test "to_assoc_list" =
   let conf = make () in
@@ -75,7 +77,7 @@ let%expect_test "to_assoc_list" =
     to_list conf
     |> List.filter (fun (_k, v) -> not @@ String.starts_with ~prefix:"0x" v)
   in
-  let pp = Fmt.(list ~sep:(unit "@.") (pair ~sep:(unit " = ") string string)) in
+  let pp = Fmt.(list ~sep:(any "@.") (pair ~sep:(any " = ") string string)) in
   Format.printf "%a@." pp assoc_list;
   [%expect
     {|
@@ -174,13 +176,6 @@ let%expect_test "to_assoc_list" =
     client.software.name = librdkafka
     client.id = rdkafka
     builtin.features = gzip,snappy,ssl,sasl,regex,lz4,sasl_gssapi,sasl_plain,sasl_scram,plugins,zstd,sasl_oauthbearer,http,oidc |}]
-
-(* let dump { conf } = *)
-(*   let size_out = Ctypes.allocate Ctypes.size_t Unsigned.Size_t.zero in *)
-(*   let data = C.Functions.Conf.dump conf size_out in *)
-(**)
-(*   (* let destroy { handle } = C.Functions.Conf.destroy handle in *) *)
-(*   data *)
 
 let%expect_test "config_test" =
   let res_pp =
